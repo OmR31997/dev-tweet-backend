@@ -1,0 +1,33 @@
+# Fly.io — ~$3–5/mo always-on (no free tier for new accounts, but fast).
+# Deploy from backend/: fly launch && fly deploy
+# Docs: https://fly.io/docs
+
+app = 'devtweethub-api'
+primary_region = 'bom'
+
+[build]
+
+[env]
+  PORT = '4000'
+  HOST = '0.0.0.0'
+  NODE_ENV = 'production'
+
+[http_service]
+  internal_port = 4000
+  force_https = true
+  auto_stop_machines = 'off'
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+  [[http_service.checks]]
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '20s'
+    method = 'GET'
+    path = '/health'
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1
