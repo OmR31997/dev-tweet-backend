@@ -48,6 +48,8 @@ fetch_git(){
     mkdir -p "$APP_DIR"
     cd "$APP_DIR"
 
+    echo "Current working directory: $(pwd)"
+    
     if [ ! -d ".git" ]; then
         echo "No git repo found. Cloning fresh..."
         git clone -b "$BRANCH_NAME" git@github.com:OmR31997/dev-tweet-backend.git .
@@ -83,8 +85,6 @@ fetch_git(){
     echo "======================================"
 
     cd "$APP_DIR"
-
-    echo "Current working directory: $(pwd)"
 }
 
 ensure_needed(){
