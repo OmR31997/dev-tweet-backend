@@ -1,0 +1,64 @@
+name: EC2 CI/CD PIPELINE
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: 24
+  ACTTION_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  NODE_OPTIONS: --no-deprecation
+
+jobs:
+  ci:
+    name: CI (Continuous Integration)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Up Node.js
+        uses: action/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run Tests
+        run: npm test
+
+  cd:
+    name: CD (Continuous Deployment)
+    runs-on: ubuntu-latest
+    needs: ci
+    steps:
+      - name: SSH Authentication
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to EC2
+        run: |
+          ssh ${{ secrets.EC2_OS_SYSTEM }}@{{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            export APP_NAME="${{ secrets.APP_NAME }}"
+            export APP_DIR="$HOME/projects/${{ secrets.APP_NAME }}"
+            export BRANCH_NAME="${{ github.ref_name }}"
+            export INSTANCE_ID="${{ secrets.INSTANCE_ID }}"
+            export SNS_TOPIC_ARN="${{ secrets.SNS_TOPIC_ARN }}"
+            bash "$APP_DIR/scripts/deploy.sh"
+          EOF
+
+      - name: Push CloudWatch Metric
+        run: |
+          aws cloudwatch put-metric-data \
+            --metric-name DeploySuccess
+            --namespace "${{ secrets.APP_NAME }}"
+            --value 1\
+            --region ap-southeast-1
