@@ -196,7 +196,7 @@ ensure_deps(){
     pwd
     ls -lah
 
-    if npm install --legacy-peer-deps --no-audit --no-fund; then
+    if npm ci --legacy-peer-deps --no-audit --no-fund; then
         echo "Dependencies installed successfully."
     else
         echo "Dependency installation failed. Please check the logs for details."
