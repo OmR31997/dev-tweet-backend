@@ -47,13 +47,13 @@ jobs:
             bash "$APP_DIR/scripts/deploy.sh"
           EOF
 
-      - name: Push CloudWatch Metric
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ap-southeast-1
-        run: |
-          aws cloudwatch put-metric-data \
-            --metric-name DeploySuccess \
-            --namespace "${{ secrets.APP_NAME }}" \
-            --value 1
+      # - name: Push CloudWatch Metric
+      #   env:
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     AWS_DEFAULT_REGION: ap-southeast-1
+      #   run: |
+      #     aws cloudwatch put-metric-data \
+      #       --metric-name DeploySuccess \
+      #       --namespace "${{ secrets.APP_NAME }}" \
+      #       --value 1
