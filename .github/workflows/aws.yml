@@ -10,6 +10,7 @@ env:
   NODE_VERSION: 24
   ACTTION_ALLOW_USE_UNSECURE_NODE_VERSION: true
   NODE_OPTIONS: --no-deprecation
+  EC2_USER: '{{ secrets.EC2_OS_SYSTEM }}'
 
 jobs:
   ci:
@@ -46,7 +47,7 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh ${{ secrets.EC2_OS_SYSTEM }}@{{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+          ssh ${{ env.EC2_USER }}@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
             export APP_NAME="${{ secrets.APP_NAME }}"
             export APP_DIR="$HOME/projects/${{ secrets.APP_NAME }}"
             export BRANCH_NAME="${{ github.ref_name }}"
