@@ -44,6 +44,9 @@ cleanup_space(){
 
 fetch_git(){
 
+    echo "APP_DIR=$APP_DIR"
+ls -lah "$APP_DIR/.git"
+
     # Ensure APP_DIR exists
     mkdir -p "$APP_DIR"
     cd "$APP_DIR" || { echo "cd failed"; exit 1; }
