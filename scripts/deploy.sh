@@ -43,7 +43,12 @@ cleanup_space(){
 }
 
 fetch_git(){
+
     echo "Fetching latest code..."
+
+    # Force remote to use SSH (avoids HTTPS username error)
+    git remote set-url origin git@github.com:OmR31997/dev-tweet-backend.git
+
 
     if ! git fetch origin; then
         echo "Failed to fetch latest code. Please check your network connection and repository access."
