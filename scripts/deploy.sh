@@ -24,6 +24,8 @@ cleanup_space() {
 fetch_git() {
   mkdir -p "$APP_DIR"
   cd "$APP_DIR"
+  echo $HOME/projects/dev-tweet-backend
+  ls -lah $HOME/projects/dev-tweet-backend
 
   if [ ! -d ".git" ]; then
     echo "No git repo found. Cloning fresh..."
