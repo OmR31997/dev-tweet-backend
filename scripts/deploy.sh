@@ -70,7 +70,7 @@ fetch_git(){
     echo "||  Directory: $APP_DIR             ||"
     echo "======================================"
 
-    cd "$APP_DIR/backend"
+    cd "$APP_DIR"
 
     echo "Current working directory: $(pwd)"
 }
