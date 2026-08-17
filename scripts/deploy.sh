@@ -55,23 +55,25 @@ fetch_git(){
         echo "Repo exists. Updating..."
         git remote set-url origin git@github.com:OmR31997/dev-tweet-backend.git
 
-    if ! git fetch origin; then
-        echo "Failed to fetch latest code. Please check your network connection and repository access."
-        exit 1
-    fi
+        if ! git fetch origin; then
+            echo "Failed to fetch latest code. Please check your network connection and repository access."
+            exit 1
+        fi
 
-    echo "Successfully fetched latest code."
+        echo "Successfully fetched latest code."
 
-    if ! git diff-index --quiet HEAD --; then
-        echo "Uncommitted changes present. Please commit or stash before deploy."
-        exit 1
-    fi
+        if ! git diff-index --quiet HEAD --; then
+            echo "Uncommitted changes present. Please commit or stash before deploy."
+            exit 1
+        fi
 
-    echo "Updating branch..."
+        echo "Updating branch..."
 
-    if ! git pull --ff-only origin "$BRANCH_NAME"; then
-        echo "Branch update failed: divergence detected. Deployment aborted."
-        exit 1
+        if ! git pull --ff-only origin "$BRANCH_NAME"; then
+            echo "Branch update failed: divergence detected. Deployment aborted."
+            exit 1
+        fi
+
     fi
 
     echo "======================================"
