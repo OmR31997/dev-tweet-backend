@@ -45,8 +45,7 @@ cleanup_space(){
 fetch_git(){
 
     # Ensure APP_DIR exists
-    mkdir -p "$APP_DIR"
-    cd "$APP_DIR"
+    cd ..
 
     echo "Current working directory: $(pwd)"
     
@@ -84,7 +83,6 @@ fetch_git(){
     echo "||  Directory: $APP_DIR             ||"
     echo "======================================"
 
-    cd "$APP_DIR"
 }
 
 ensure_needed(){
