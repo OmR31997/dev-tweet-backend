@@ -40,20 +40,20 @@ jobs:
         run: |
           ssh ${{ env.EC2_USER }}@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
             export APP_NAME="${{ secrets.APP_NAME }}"
-            export APP_DIR="$HOME/projects/${APP_NAME}"
+            export APP_DIR="$HOME/projects/${{ secrets.APP_NAME }}"
             export BRANCH_NAME="${{ github.ref_name }}"
             export INSTANCE_ID="${{ secrets.INSTANCE_ID }}"
             export SNS_TOPIC_ARN="${{ secrets.SNS_TOPIC_ARN }}"
             bash "$APP_DIR/scripts/deploy.sh"
           EOF
 
-      # - name: Push CloudWatch Metric
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     AWS_DEFAULT_REGION: ap-southeast-1
-      #   run: |
-      #     aws cloudwatch put-metric-data \
-      #       --metric-name DeploySuccess \
-      #       --namespace "${{ secrets.APP_NAME }}" \
-      #       --value 1
+      - name: Push CloudWatch Metric
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ap-southeast-1
+        run: |
+          aws cloudwatch put-metric-data \
+            --metric-name DeploySuccess \
+            --namespace "${{ secrets.APP_NAME }}" \
+            --value 1
