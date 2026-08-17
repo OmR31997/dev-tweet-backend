@@ -44,11 +44,16 @@ cleanup_space(){
 
 fetch_git(){
 
-    echo "Fetching latest code..."
+    # Ensure APP_DIR exists
+    mkdir -p "$APP_DIR"
+    cd "$APP_DIR"
 
-    # Force remote to use SSH (avoids HTTPS username error)
-    git remote set-url origin git@github.com:OmR31997/dev-tweet-backend.git
-
+    if [ ! -d ".git" ]; then
+        echo "No git repo found. Cloning fresh..."
+        git clone -b "$BRANCH_NAME" git@github.com:OmR31997/dev-tweet-backend.git .
+    else
+        echo "Repo exists. Updating..."
+        git remote set-url origin git@github.com:OmR31997/dev-tweet-backend.git
 
     if ! git fetch origin; then
         echo "Failed to fetch latest code. Please check your network connection and repository access."
