@@ -1,6 +1,10 @@
 #!/bin/bash
 
+<<<<<<< HEAD
 set -e -o pipefail
+=======
+set -euo pipefail
+>>>>>>> parent of 122d21e (auto-deployment-2.1)
 
 PORT="${PORT:-4000}"
 APP_NAME="${APP_NAME:?APP_NAME is required}"
