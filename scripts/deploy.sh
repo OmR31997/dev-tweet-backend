@@ -44,8 +44,20 @@ cleanup_space(){
 
 fetch_git(){
 
+    # Verify required environment variables
+    : "${APP_NAME:?APP_NAME is required}"
+    : "${APP_DIR:?APP_DIR is required}"
+    : "${BRANCH_NAME:?BRANCH_NAME is required}"
+    : "${INSTANCE_ID:?INSTANCE_ID is required}"
+    : "${SNS_TOPIC_ARN:?SNS_TOPIC_ARN is required}"
+
     echo "APP_DIR=$APP_DIR"
-ls -lah "$APP_DIR/.git"
+    # If APP_DIR is empty or not a directory, default to script's parent directory
+    if [[ -z "$APP_DIR" || ! -d "$APP_DIR" ]]; then
+        APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+        echo "APP_DIR was empty or invalid, defaulting to $APP_DIR"
+    fi
+    ls -lah "$APP_DIR/.git"
 
     # Ensure APP_DIR exists
     mkdir -p "$APP_DIR"
