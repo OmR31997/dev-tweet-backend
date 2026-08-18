@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail
+set -e pipefail
 
 PORT="${PORT:-4000}"
 APP_NAME="${APP_NAME:?APP_NAME is required}"
