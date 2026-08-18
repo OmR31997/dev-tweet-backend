@@ -69,15 +69,34 @@ fetch_git(){
         echo "No git repo found. Cloning fresh..."
         git clone -b "$BRANCH_NAME" git@github.com:OmR31997/dev-tweet-backend.git .
     else
-        echo "Repo exists. Updating..."
-        git remote set-url origin git@github.com:OmR31997/dev-tweet-backend.git
+        # Validate that the .git directory is a proper repository
+        if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+            echo "Existing .git is not a valid repository. Removing and recloning..."
+            rm -rf .git
+            git clone -b "$BRANCH_NAME" git@github.com:OmR31997/dev-tweet-backend.git .
+        else
+            echo "Repo exists. Updating..."
+            git remote set-url origin git@github.com:OmR31997/dev-tweet-backend.git
 
-        if ! git fetch origin; then
-            echo "Failed to fetch latest code. Please check your network connection and repository access."
-            exit 1
+            if ! git fetch origin; then
+                echo "Failed to fetch latest code. Please check your network connection and repository access."
+                exit 1
+            fi
+
+            echo "Successfully fetched latest code."
+
+            if ! git diff-index --quiet HEAD --; then
+                echo "Uncommitted changes present. Please commit or stash before deploy."
+                exit 1
+            fi
+
+            echo "Updating branch..."
+
+            if ! git pull --ff-only origin "$BRANCH_NAME"; then
+                echo "Branch update failed: divergence detected. Deployment aborted."
+                exit 1
+            fi
         fi
-
-        echo "Successfully fetched latest code."
 
         if ! git diff-index --quiet HEAD --; then
             echo "Uncommitted changes present. Please commit or stash before deploy."
