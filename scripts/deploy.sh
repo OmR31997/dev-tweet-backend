@@ -53,7 +53,7 @@ ls -lah "$APP_DIR/.git"
 
     echo "Current working directory: $(pwd)"
     
-    if [ ! -d ".git" ]; then
+    if [ ! -d ".git" ] || ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
         echo "No git repo found. Cloning fresh..."
         git clone -b "$BRANCH_NAME" git@github.com:OmR31997/dev-tweet-backend.git .
     else
@@ -263,70 +263,57 @@ pm2_startup(){
     pm2 save
 }
 
-# cloudWatch_config(){
-
-#     echo "Configuring CloudWatch..."
-
-#     # -----------------------------------
-#     # Deployment Success Metric
-#     # -----------------------------------
-
-#     aws cloudwatch put-metric-data \
-#         --metric-name DeploySuccess \
-#         --namespace DevTweetBackend \
-#         --value 1 \
-#         --region "$REGION"
-
-#     echo "Deployment success metric sent."
-
-#     # -----------------------------------
-#     # CPU Alarm
-#     # -----------------------------------
-
-#     echo "Creating/updating CPU alarm..."
-
-#     aws cloudwatch put-metric-alarm \
-#         --alarm-name "${APP_NAME}-HighCPU" \
-#         --alarm-description "CPU utilization above 20% for 5 minutes" \
-#         --namespace AWS/EC2 \
-#         --metric-name CPUUtilization \
-#         --dimensions Name=InstanceId,Value="$INSTANCE_ID" \
-#         --statistic Average \
-#         --period 60 \
-#         --threshold 20 \
-#         --comparison-operator GreaterThanThreshold \
-#         --evaluation-periods 5 \
-#         --datapoints-to-alarm 5 \
-#         --alarm-actions "$SNS_TOPIC_ARN" \
-#         --region "$REGION"
-
-#     echo "CPU alarm configured."
-
-#     # -----------------------------------
-#     # Memory Alarm
-#     # -----------------------------------
-
-#     echo "Creating/updating Memory alarm..."
-
-#     aws cloudwatch put-metric-alarm \
-#         --alarm-name "${APP_NAME}-HighMemory" \
-#         --alarm-description "Memory utilization above 20% for 5 minutes" \
-#         --namespace CWAgent \
-#         --metric-name mem_used_percent \
-#         --dimensions Name=InstanceId,Value="$INSTANCE_ID" \
-#         --statistic Average \
-#         --period 60 \
-#         --threshold 20 \
-#         --comparison-operator GreaterThanThreshold \
-#         --evaluation-periods 5 \
-#         --datapoints-to-alarm 5 \
-#         --alarm-actions "$SNS_TOPIC_ARN" \
-#         --region "$REGION"
-
-#     echo "Memory alarm configured."
-
-#     echo "CloudWatch configuration completed."
-# }
+cloudWatch_config(){
+    echo "Configuring CloudWatch..."
+    # -----------------------------------
+    # Deployment Success Metric
+    # -----------------------------------
+    aws cloudwatch put-metric-data \
+        --metric-name DeploySuccess \
+        --namespace DevTweetBackend \
+        --value 1 \
+        --region "$REGION"
+    echo "Deployment success metric sent."
+    # -----------------------------------
+    # CPU Alarm
+    # -----------------------------------
+    echo "Creating/updating CPU alarm..."
+    aws cloudwatch put-metric-alarm \
+        --alarm-name "${APP_NAME}-HighCPU" \
+        --alarm-description "CPU utilization above 20% for 5 minutes" \
+        --namespace AWS/EC2 \
+        --metric-name CPUUtilization \
+        --dimensions Name=InstanceId,Value="$INSTANCE_ID" \
+        --statistic Average \
+        --period 60 \
+        --threshold 20 \
+        --comparison-operator GreaterThanThreshold \
+        --evaluation-periods 5 \
+        --datapoints-to-alarm 5 \
+        --alarm-actions "$SNS_TOPIC_ARN" \
+        --region "$REGION"
+    echo "CPU alarm configured."
+    # -----------------------------------
+    # Memory Alarm
+    # -----------------------------------
+    echo "Creating/updating Memory alarm..."
+    aws cloudwatch put-metric-alarm \
+        --alarm-name "${APP_NAME}-HighMemory" \
+        --alarm-description "Memory utilization above 20% for 5 minutes" \
+        --namespace CWAgent \
+        --metric-name mem_used_percent \
+        --dimensions Name=InstanceId,Value="$INSTANCE_ID" \
+        --statistic Average \
+        --period 60 \
+        --threshold 20 \
+        --comparison-operator GreaterThanThreshold \
+        --evaluation-periods 5 \
+        --datapoints-to-alarm 5 \
+        --alarm-actions "$SNS_TOPIC_ARN" \
+        --region "$REGION"
+    echo "Memory alarm configured."
+    echo "CloudWatch configuration completed."
+}
 
 # =======================================
 # Deployment Flow
@@ -344,7 +331,7 @@ ensure_deps
 
 pm2_startup
 
-# cloudWatch_config
+cloudWatch_config
 
 echo "======================================"
 echo "Deployment of $APP_NAME completed successfully."
